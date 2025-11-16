@@ -1,0 +1,19 @@
+.market-cap-history ul {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.market-cap-history ul li {
+  display: flex;
+  font-size: 15px;
+  color: #dfe6e9;
+  line-height: 18px;
+  padding: 0;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.market-cap-history ul li span {
+  color: rgb(161, 167, 187);
+}

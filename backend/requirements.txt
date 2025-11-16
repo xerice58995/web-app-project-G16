@@ -1,0 +1,8 @@
+yfinance
+pymysql
+tqdm
+pandas
+scipy
+Flask
+flask-cors
+cryptography

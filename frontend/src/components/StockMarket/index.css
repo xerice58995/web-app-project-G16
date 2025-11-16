@@ -1,0 +1,21 @@
+.stock-market-description {
+  color: rgb(167, 160, 187);
+}
+
+.stock-market {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 650px;
+}
+
+.stock-line-chart {
+  margin-top: 30px;
+}
+
+.stock-market-main {
+  display: flex;
+  gap: 20px;
+}

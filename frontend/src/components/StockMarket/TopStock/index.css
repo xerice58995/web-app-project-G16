@@ -1,0 +1,14 @@
+.top-stock {
+    width: inherit;
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+    justify-content: space-between;
+}
+
+.top-stock li {
+  width: 200px;
+  height: 110px;
+  background-color: #222531;
+  border-radius: 15px;
+}

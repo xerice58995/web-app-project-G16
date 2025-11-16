@@ -1,0 +1,10 @@
+.home-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.home-main {
+    display: flex;
+    font-family: inherit;
+}

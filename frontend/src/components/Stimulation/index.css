@@ -1,0 +1,21 @@
+.stimulation-container {
+  display: flex;
+  width: 100%;
+  padding: 0 20px;
+  flex-direction: column;
+}
+
+.stimulation-description {
+  color: rgb(167, 160, 187);
+}
+
+.stimulation-container header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.stimulation-container header select {
+  width: 20%;
+}

@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # 1. 資料庫服務 (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: investment_db
+    restart: always
+    environment:
+      # 自動建立 'investment_platform' 資料庫
+      MYSQL_DATABASE: 'investment_platform'
+      # ❗ 請設定一個安全的 Root 密碼
+      MYSQL_ROOT_PASSWORD: 'password' 
+    ports:
+      # 將本機的 3307 Port 映射到容器的 3306
+      - "3307:3306"
+    volumes:
+      # 1. 將我們最新的 SQL schema 掛載到 Docker 啟動資料夾
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # 2. 持久化資料，這樣容器重啟後資料還在
+      - db_data:/var/lib/mysql
+    healthcheck:
+      # 等待 MySQL 真正準備好再啟動後端
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. 後端服務 (Flask)
+  backend:
+    build:
+      context: ./backend  # 告訴 Docker 在 ./backend 資料夾找 Dockerfile
+    container_name: investment_backend
+    restart: always
+    ports:
+      # 將本機的 5001 Port 映射到容器的 5000
+      - "5001:5000"
+    volumes:
+      # 將本機程式碼掛載到容器，這樣修改程式碼時 Flask 會自動重啟 (熱加載)
+      - ./backend:/app
+    environment:
+      # 1. Flask 設定
+      FLASK_APP: 'run.py'
+      FLASK_ENV: 'development'
+      FLASK_RUN_HOST: '0.0.0.0' # 必須設為 0.0.0.0 才能從容器外訪問
+      # 2. 資料庫連線設定 (❗ 關鍵)
+      MYSQL_HOST: 'db'        # 'db' 必須與上面的服務名稱一致
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'password' # 必須與上面一致
+      MYSQL_DB: 'investment_platform'
+
+    command: ["flask", "run"]
+    depends_on:
+      db:
+        # 確保 db 服務的 healthcheck 通過後，backend 才啟動
+        condition: service_healthy
+
+  # 3. 前端服務 (React)
+  frontend:
+    build:
+      context: ./frontend # 告訴 Docker 在 ./frontend 資料夾找 Dockerfile
+    container_name: investment_frontend
+    restart: always
+    ports:
+      # 將本機的 5173 Port 映射到容器的 5173
+      - "5173:5173"
+    volumes:
+      # 掛載程式碼，但不掛載 node_modules (讓它使用容器內的)
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true  # 保持 create-react-app 的 dev server 運行
+    tty: true
+    depends_on:
+      - backend
+
+# 定義一個具名 volume 來持久化資料庫
+volumes:
+  db_data:

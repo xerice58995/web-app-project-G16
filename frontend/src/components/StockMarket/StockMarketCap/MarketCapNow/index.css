@@ -1,0 +1,19 @@
+.market-cap-value {
+  display: flex;
+  align-items: baseline;
+}
+
+.market-cap-value > :nth-child(1) {
+  font-size: 40px;
+}
+.market-cap-value > :nth-child(2) {
+  font-size: 20px;
+}
+
+.market-cap-change {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 18px;
+  flex-direction: row !important;
+}

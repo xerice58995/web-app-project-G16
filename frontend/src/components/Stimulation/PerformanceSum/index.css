@@ -1,0 +1,24 @@
+.performance-sum-container {
+  width: 100%;
+  margin-top: 40px;
+}
+
+.performance-summary-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.performance-summary-table thead tr {
+  border-bottom: 2px solid white;
+  text-align: end;
+  height: 40px;
+}
+
+.performance-summary-table tbody tr {
+  border-bottom: 1px solid #30363d;
+  height: 40px;
+}
+
+.performance-summary-table tbody tr td:not(:first-child) {
+  text-align: end;
+}

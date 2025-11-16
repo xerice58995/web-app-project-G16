@@ -1,0 +1,26 @@
+.home-header {
+    display: flex;
+    background-color: #0d1421;
+    border-bottom: 1.5px solid #323546;
+    color: white;
+    height: 75px;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.login-btn {
+    background-color: #3861fb;
+    color: white;
+    font-size: 15px;
+    height: 40px;
+    width: 85px;
+    border: none;
+    border-radius: 8px;
+}
+
+.login-btn:hover {
+    background-color: #2c4ed8;
+    cursor: pointer;
+}

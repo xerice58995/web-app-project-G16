@@ -1,0 +1,154 @@
+/* index.css */
+.portfolio-edit-container {
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-family: "Inter", sans-serif;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  width: 700px;
+  margin: 0 auto;
+}
+
+/* Header */
+.portfolio-edit-container header {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #f0f6fc;
+}
+
+/* Navigation bar */
+.portfolio-nav {
+  display: flex;
+  border-bottom: 1px solid #30363d;
+  padding-top: 12px;
+  margin-bottom: 20px;
+  list-style: none;
+  gap: 24px;
+}
+
+.portfolio-nav li {
+  padding-bottom: 8px;
+  cursor: pointer;
+  color: #8b949e;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.portfolio-nav li:hover {
+  color: #58a6ff;
+}
+
+.portfolio-nav li.active {
+  color: #f0f6fc;
+  border-bottom: 2px solid #58a6ff;
+}
+
+/* Table */
+.portfolio-edit-table {
+  display: block;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.portfolio-edit-table th,
+.portfolio-edit-table td {
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #21262d;
+}
+
+/* Input fields */
+.portfolio-edit-table td input {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #e6edf3;
+  padding-left: 8px;
+  width: 80px;
+  height: 32px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.portfolio-edit-table td input:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 4px #58a6ff40;
+}
+
+/* Percent symbol */
+.percent-symbol {
+  margin-left: 6px;
+  color: #8b949e;
+}
+
+/* Dropdown (select) */
+select {
+  background-color: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  appearance: none;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hide the default arrow (browser-dependent) */
+select::-ms-expand {
+  display: none;
+}
+
+select:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 4px #58a6ff40;
+}
+
+/* Make the cell a flex container */
+.allocation-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes button to the end */
+  width: 100%;
+}
+
+/* Group input and % tightly together */
+.allocation-input-group {
+  display: flex;
+  align-items: center;
+}
+
+/* Remove Button */
+.remove-btn {
+  margin-left: 10px;
+  background-color: #21262d;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.remove-btn:hover {
+  background-color: #da3633;
+  border-color: #f85149;
+  color: white;
+}
+
+.remove-btn:active {
+  background-color: #b62324;
+}
+
+.remove-btn:focus {
+  outline: none;
+  box-shadow: 0 0 4px #f8514940;
+}
