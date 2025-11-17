@@ -49,7 +49,7 @@ services:
       MYSQL_PASSWORD: 'password' # 必須與上面一致
       MYSQL_DB: 'investment_platform'
 
-    command: ["flask", "run"]
+    command: sh -c "python seed.py && flask run"
     depends_on:
       db:
         # 確保 db 服務的 healthcheck 通過後，backend 才啟動

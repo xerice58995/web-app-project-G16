@@ -95,5 +95,71 @@ def user_login():
         cursor.close()
 
 # ------------------------------------------------------------------
-# (之後會在這裡繼續實作其他 API)
+# API: Asset
 # ------------------------------------------------------------------
+@api_v1.route('/assets', methods=['GET'])
+def getAssets():
+    """
+    API: getAssets
+    取得所有資產資料
+    """
+    return
+
+@api_v1.route('/assets/price/<string:ticker_symbol>', methods=['GET'])
+def getAssetHistoricalPrices(ticker_symbol):
+    """
+    API: getAssetHistoricalPrices
+    取得特定資產的歷史價格資料(過去一年)
+    """
+    return
+
+# ------------------------------------------------------------------
+# API: Portfolio
+# ------------------------------------------------------------------
+@api_v1.route('/portfolio/<int:user_id>', methods=['GET'])
+def getUserPortfolio(user_id):
+    """
+    API: getUserPortfolio
+    取得特定使用者的投資組合資料
+    """
+    return
+
+@api_v1.route('/portfolio/<int:portfolio_id>', methods=['POST'])
+def updatePortfolio(portfolio_id):
+    """
+    API: updatePortfolio
+    更新特定投資組合的資料 (新增/刪除/修改 投資標的)
+    """
+    return
+
+@api_v1.route('/portfolio/<int:portfolio_id>', methods=['DELETE'])
+def deletePortfolio(portfolio_id):
+    """
+    API: deletePortfolio
+    刪除特定投資組合
+    """
+    return
+
+@api_v1.route('/portfolio/performance/<int:portfolio_id>', methods=['GET'])
+def getPortfolioPerformance(portfolio_id):
+    """
+    API: getPortfolioPerformance
+    取得特定投資組合的績效資料
+    """
+    return
+
+@api_v1.route('/portfolio/simulation/<int:portfolio_id>', methods=['GET'])
+def simulatePortfolio(portfolio_id):
+    """
+    API: simulatePortfolio
+    模擬特定投資組合的資產配置
+    """
+    return
+
+@api_v1.route('/portfolio/recommendation/<int:portfolio_id>', methods=['GET'])
+def recommendPortfolio(portfolio_id):
+    """
+    API: recommendPortfolio
+    為特定投資組合提供資產配置建議
+    """
+    return
