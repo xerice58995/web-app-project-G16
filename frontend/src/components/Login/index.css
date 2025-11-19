@@ -75,3 +75,9 @@
   background-color: #6c757d; /* gray out disabled button */
   cursor: not-allowed;
 }
+
+.login p {
+  margin-top: 40px;
+  color: red;
+  text-align: center;
+}

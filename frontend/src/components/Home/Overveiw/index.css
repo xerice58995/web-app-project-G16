@@ -1,0 +1,12 @@
+.about-us {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 650px;
+}
+
+.about-us .description {
+  color: rgb(167, 160, 187);
+}
