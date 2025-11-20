@@ -18,6 +18,7 @@
     width: 85px;
     border: none;
     border-radius: 8px;
+    font-weight: bold;
 }
 
 .login-btn:hover {

@@ -66,7 +66,7 @@ def user_login():
 
     try:
         # 1. 尋找使用者
-        cursor.execute("SELECT user_id, password_hash FROM Users WHERE username = %s", (username,))
+        cursor.execute("SELECT user_id, password_hash, username FROM Users WHERE username = %s", (username,))
         user = cursor.fetchone()
 
         # 2. (安全!) 檢查密碼雜湊
@@ -75,6 +75,7 @@ def user_login():
             return jsonify({
                 "data": {
                     "userId": user['user_id'],
+                    "userName": user['username'],
                 },
                 "code": 1,
                 "message": "account successfully login"
