@@ -9,6 +9,9 @@ import AboutUs from "./Overveiw";
 import StockMarket from "../StockMarket";
 import MyPortfolios from "../MyPortfolios";
 import Stimulation from "../Stimulation";
+import PremiumLabel from "./PremiumFeature";
+import FloatingAd from "./FloatingAd";
+
 
 export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -18,6 +21,8 @@ export default function Home() {
   return (
     <div className="home-container">
       <HomeHeader toggleLoginModal={openLoginModal} />
+      <PremiumLabel />
+      <FloatingAd />
       <main className="home-main">
         <NavBar />
         <Routes>
