@@ -1,13 +1,21 @@
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
 
 export const StoreContext = createContext(null);
 
 export const StoreProvider = ({ children }) => {
-    const [loginStatus, setLoginStatus] = useState(false);
-    const [userId, setUserId] = useState(null);
-    return (
-        <StoreContext.Provider value={{ loginStatus, setLoginStatus, userId, setUserId }}>
-            {children}
-        </StoreContext.Provider>
-    );
+  const [userInfo, setUserInfo] = useState(() => ({
+    loginStatus: localStorage.getItem("loginStatus") === "true",
+    userId: localStorage.getItem("userId"),
+    userName: localStorage.getItem("userName") || "",
+  }));
+  return (
+    <StoreContext.Provider
+      value={{
+        userInfo,
+        setUserInfo,
+      }}
+    >
+      {children}
+    </StoreContext.Provider>
+  );
 };

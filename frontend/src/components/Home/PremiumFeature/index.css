@@ -1,0 +1,11 @@
+.premium-label {
+  position: fixed;
+  top: 17px;
+  right: 130px;
+  background-color: #6e56cf;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}

@@ -5,21 +5,29 @@ import { StoreContext } from "../../Utils/Context";
 
 export default function HomeHeader({ toggleLoginModal }) {
   const navigate = useNavigate();
-  const { loginStatus, setLoginStatus, setUserId } = useContext(StoreContext);
+  const { userInfo, setUserInfo } = useContext(StoreContext);
   const logout = () => {
-    setUserId(null);
-    setLoginStatus(false);
+    setUserInfo({ loginStatus: false, userId: null, userName: "" });
     navigate("/");
   };
   return (
     <header className="home-header">
       <h1 style={{ padding: "15px" }}>NTU Investment</h1>
+      <div
+        style={{
+          padding: "15px",
+          display: userInfo.loginStatus ? "block" : "none",
+          fontWeight: "bold",
+        }}
+      >
+        Welcome, {userInfo.userName}
+      </div>
       <button
         className="login-btn"
-        style={{ backgroundColor: loginStatus ? "red" : "" }}
-        onClick={!loginStatus ? toggleLoginModal : logout}
+        style={{ backgroundColor: userInfo.loginStatus ? "red" : "" }}
+        onClick={!userInfo.loginStatus ? toggleLoginModal : logout}
       >
-        {loginStatus ? "Log Out" : "Log In"}
+        {userInfo.loginStatus ? "Log Out" : "Log In"}
       </button>
     </header>
   );
