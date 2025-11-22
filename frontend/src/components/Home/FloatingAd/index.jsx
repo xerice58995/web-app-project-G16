@@ -1,4 +1,5 @@
 import "./index.css";
+import adImage from "./ad.png";
 import { useState, useContext } from "react";
 import { StoreContext } from "../../Utils/Context";
 
@@ -17,15 +18,13 @@ export default function FloatingAd() {
 
   return (
     <div className="floating-ad">
-      <button className="close-ad-btn" onClick={handleClose}>
-        X
-      </button>
+      <button className="close-ad-btn" onClick={handleClose}>X</button>
 
-      <h3>Test Advertisement</h3>
-      <p style={{ textAlign: "center", padding: "0" }}>
-        NTU webapp course is very interesting! We got wonderful instructor and
-        TA!
-      </p>
+      <img
+        src={adImage}
+        alt="Advertisement"
+        className="ad-image"
+      />
     </div>
   );
 }
