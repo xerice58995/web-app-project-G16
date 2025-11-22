@@ -1,0 +1,30 @@
+/* Empty State Container */
+.empty-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  border-radius: 12px;
+  text-align: center;
+  justify-content: center;
+  margin-left: 100px;
+  color: #4b5563;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* The Headline */
+.empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+/* The Subtitle */
+.empty-state-description {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
