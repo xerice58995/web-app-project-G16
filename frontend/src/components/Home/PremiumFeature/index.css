@@ -1,11 +1,51 @@
-.premium-label {
+.premium-btn {
   position: fixed;
-  top: 17px;
+  top: 19px;
   right: 130px;
-  background-color: #6e56cf;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  
+  /* 字體與顏色 */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #e2e8f0; 
+  background-color: rgba(255, 255, 255, 0.1); 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* 動畫設定 */
+  transition: all 0.2s ease;
+}
+
+.premium-btn * {
+  color: inherit;
+}
+
+/* Hover 狀態 */
+.premium-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Active (點擊) 狀態 */
+.premium-btn:active {
+  transform: scale(0.95);
+}
+
+/* 皇冠圖示樣式 */
+.crown-icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+  color: #e2e8f0;
+}
+
+/* 父層 Hover 時，子層皇冠的變化 */
+.premium-btn:hover .crown-icon {
+  transform: rotate(-12deg);
+  color: #fff45b; /* amber-500 */
 }

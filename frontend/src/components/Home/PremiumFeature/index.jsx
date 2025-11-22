@@ -1,24 +1,33 @@
 import "./index.css";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { Crown } from "lucide-react";
 import { StoreContext } from "../../Utils/Context";
+import Login from "../../Login";
 
 export default function PremiumLabel() {
   const { userInfo } = useContext(StoreContext);
+  const [showLogin, setShowLogin] = useState(false);
+
   if (userInfo.loginStatus) return null;
+
+  const handlePremiumClick = () => {
+    setShowLogin(true);
+  };
+
+  const handleCloseLogin = () => {
+    setShowLogin(false);
+  };
+
   return (
-    <div className="premium-label">
-      Log in for premium feature!
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          right: "-6px",
-          marginTop: "-6px",
-          borderTop: "6px solid transparent",
-          borderBottom: "6px solid transparent",
-          borderLeft: "6px solid #6e56cf",
-        }}
-      ></div>
-    </div>
+    <>
+      <button className="premium-btn" onClick={handlePremiumClick}>
+        <Crown size={16} className="crown-icon" />
+        <span>Sign up for Premium</span>
+      </button>
+
+      {showLogin && (
+        <Login onClose={handleCloseLogin} initialMode="signup" />
+      )}
+    </>
   );
 }
