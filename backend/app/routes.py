@@ -83,8 +83,6 @@ def user_login():
             }), 200
         else:
             # 使用者不存在或密碼錯誤
-            # (註: 修正您 user.md 中的錯字 "logic")
-            #
             return jsonify({
                 "data": {},
                 "code": 0,
