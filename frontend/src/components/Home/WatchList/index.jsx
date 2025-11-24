@@ -37,8 +37,8 @@ export default function Watchlist() {
             </tr>
           </thead>
           <tbody>
-            {myStocks.map((stock) => (
-              <tr key={stock.symbol}>
+            {myStocks.map((stock, index) => (
+              <tr key={`${stock.symbol}-${index}`}>
                 <td>{stock.symbol}</td>
                 <td>{stock.price}</td>
                 <td
