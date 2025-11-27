@@ -102,8 +102,7 @@ export default function PortfolioBalance({ stimulatedResults }) {
   };
 
   const zoomOut = () => {
-    setLeft("dataMin");
-    setRight("dataMax");
+    setXBound(["dataMin", "dataMax"]);
     setYBound(["auto", "auto"]);
     setRefAreaLeft("");
     setRefAreaRight("");
