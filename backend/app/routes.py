@@ -104,7 +104,6 @@ def getAssets():
     取得所有資產資料
     """
     try:
-        print("debug")
         assets_data = services.get_all_stock_tickers()
         return jsonify({
             "data": assets_data,
@@ -378,7 +377,10 @@ def simulatePortfolio(portfolio_id):
         # 依照常見順序排列
         for key in ["10th", "25th", "50th", "75th", "90th"]:
             if key in percentiles:
-                formatted_val.append({key: percentiles[key]})
+                metrics = services.get_portfolio_metrics(portfolio_id, stimulated_data=percentiles[key]) #dict of metrics
+                metrics['percentile'] = key
+                metrics['values'] = percentiles[key]
+                formatted_val.append(metrics)
 
         return jsonify({
             "data": {

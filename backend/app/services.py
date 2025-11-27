@@ -527,12 +527,12 @@ def simulate_portfolio_growth(portfolio_id):
 # Recommendation 相關服務
 # ---------------------------------------------------------
 
-def get_portfolio_metrics(portfolio_id):
+def get_portfolio_metrics(portfolio_id, stimulated_data = None):
     """
     [Helper] 計算投資組合的關鍵財務指標 (Return, Volatility, Sharpe)
     """
     # 重用我們之前寫好的函式，取得過去一年 (252天) 的數據
-    portfolio_values = get_portfolio_daily_values(portfolio_id, days=252)
+    portfolio_values = get_portfolio_daily_values(portfolio_id, days=252) if stimulated_data is None else np.array(stimulated_data)
     
     if portfolio_values is None or len(portfolio_values) < 2:
         return None
@@ -544,6 +544,7 @@ def get_portfolio_metrics(portfolio_id):
     # 假設一年有 252 個交易日
     mean_daily_return = np.mean(daily_returns)
     std_daily_return = np.std(daily_returns)
+    min_balance = np.min(portfolio_values)
     
     annual_return = mean_daily_return * 252
     annual_volatility = std_daily_return * np.sqrt(252)
@@ -557,9 +558,12 @@ def get_portfolio_metrics(portfolio_id):
         sharpe_ratio = (annual_return - risk_free_rate) / annual_volatility
         
     return {
+        "end_value": round(portfolio_values[-1], 2), # 最後一天的總價值
+        "total_return": round((portfolio_values[-1] - portfolio_values[0]) / portfolio_values[0], 4), # 總報酬率
         "annual_return": round(annual_return, 4),       # 例如 0.1523 (15.23%)
         "annual_volatility": round(annual_volatility, 4), # 例如 0.2015 (20.15%)
-        "sharpe_ratio": round(sharpe_ratio, 4)          # 例如 0.65
+        "sharpe_ratio": round(sharpe_ratio, 4),          # 例如 0.65
+        "max_drawdown": round((np.max(portfolio_values) - min_balance) / np.max(portfolio_values), 4) # 最大回撤
     }
 
 def generate_portfolio_recommendation(portfolio_id):
