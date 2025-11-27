@@ -12,8 +12,9 @@ export default function PortfolioAllocationPieChart({ data }) {
       (((asset.quantity * asset.price) / totalValue) * 100),
   }));
   return (
-    <PieChart width={400} height={350}>
+    <PieChart width={400} height={350} outline="none">
       <Pie
+        outline="none"
         data={data}
         cx="50%"
         cy="50%"
