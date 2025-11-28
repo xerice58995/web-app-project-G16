@@ -40,7 +40,14 @@ def user_signup():
         db.commit()
 
         #
-        return jsonify({"code": 1, "message": "account successfully created"}), 201
+        return jsonify({
+            "code": 1,
+            "message": "account successfully created",
+            "data": {
+                "userId": cursor.lastrowid,
+                "userName": username
+            }
+        }), 201
 
     except pymysql.MySQLError as e:
         db.rollback()
