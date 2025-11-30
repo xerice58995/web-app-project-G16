@@ -1,109 +1,135 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./index.css";
-import { Star, Trash2, Activity, Plus, X } from "lucide-react";
+import { Trash2, Activity, Plus, X, Search } from "lucide-react";
+import { StoreContext } from "../../Utils/Context";
+import api from "../../api";
+import EmptyContent from "../../Utils/EmptyContent";
+import { CircleQuestionMark, Loader2 } from "lucide-react";
 
 export default function Watchlist() {
+  const domainMp = {
+    AAPL: "apple.com",
+    GOOG: "google.com",
+    TSLA: "tesla.com",
+    MSFT: "microsoft.com",
+    AMZN: "amazon.com",
+    NVDA: "nvidia.com",
+    "2330.TW": "tsmc.com",
+    NFLX: "netflix.com",
+  };
+
+  const { userInfo } = useContext(StoreContext);
   const [isOpen, setIsOpen] = useState(false);
-  const USER_ID = 1; 
-  const [watchlist, setWatchlist] = useState(["AAPL", "NVDA", "2330.TW"]);
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(0);
+  const [watchlist, setWatchlist] = useState([]);
+  const [allTickers, setAllTickers] = useState([]);
+  const [filterTickers, setFilterTickers] = useState([]);
+  const fetchWatchlistData = async () => {
+    try {
+      const response = await api.get(`/watchlists/${userInfo.userId}`);
+      const data = response.data.data;
+      setWatchlist(data);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
 
-  // 1. 將資料源改為 State，以便更新 base (昨收價)
-  const [stockData, setStockData] = useState([
-    { symbol: "AAPL", name: "Apple Inc.", base: 175.3, domain: "apple.com" },
-    { symbol: "GOOG", name: "Alphabet", base: 138.0, domain: "google.com" },
-    { symbol: "TSLA", name: "Tesla, Inc.", base: 240.5, domain: "tesla.com" },
-    { symbol: "MSFT", name: "Microsoft", base: 420.0, domain: "microsoft.com" },
-    { symbol: "AMZN", name: "Amazon", base: 180.0, domain: "amazon.com" },
-    { symbol: "NVDA", name: "NVIDIA", base: 890.0, domain: "nvidia.com" },
-    { symbol: "2330.TW", name: "TSMC", base: 780.0, domain: "tsmc.com" },
-    { symbol: "NFLX", name: "Netflix", base: 600.0, domain: "netflix.com" },
-  ]);
+  const addWatchListItem = async (symbol) => {
+    try {
+      setLoading(true);
+      await api.post(`/watchlists/${userInfo.userId}`, {
+        ticker: symbol,
+      });
+      setRefresh((prev) => prev ^ 1);
+    } catch (error) {
+      console.error("Add error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const [prices, setPrices] = useState(() => {
-    const initial = {};
-    stockData.forEach((s) => {
-      initial[s.symbol] = { price: s.base, change: 0, pct: 0 };
-    });
-    return initial;
-  });
+  const removeWatchListItem = async (symbol) => {
+    try {
+      setLoading(true);
+      await api.delete(`/watchlists/${userInfo.userId}/${symbol}`);
+      setRefresh((prev) => prev ^ 1);
+    } catch (error) {
+      console.error("Remove error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // 2. 連接後端：抓取資料並計算昨收價 (base)
+  const filterTickersFunc = (query) => {
+    const filtered = allTickers.filter((ticker) =>
+      ticker.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilterTickers(filtered);
+  };
+
   useEffect(() => {
-    fetch(`/api/v1/watchlists/${USER_ID}`)
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.code === 1) {
-          const apiData = response.data;
+    if (userInfo.userId) {
+      fetchWatchlistData();
+    }
+  }, [userInfo.userId, refresh]);
 
-          // 更新 base (反推昨收價)
-          setStockData((prevData) =>
-            prevData.map((stock) => {
-              const match = apiData.find((d) => d.ticker === stock.symbol);
-              if (match) {
-                const realBase = match.price / (1 + match.change / 100);
-                return { ...stock, base: realBase };
-              }
-              return stock;
-            })
-          );
-
-          // 更新初始顯示價格
-          setPrices((prevPrices) => {
-            const nextPrices = { ...prevPrices };
-            apiData.forEach((d) => {
-              if (prevPrices[d.ticker]) {
-                const realBase = d.price / (1 + d.change / 100);
-                nextPrices[d.ticker] = {
-                  price: d.price,
-                  change: d.price - realBase,
-                  pct: d.change,
-                };
-              }
-            });
-            return nextPrices;
-          });
-        }
-      })
-      .catch((err) => console.error("Fetch error:", err));
+  useEffect(() => {
+    const fetchTickers = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/assets");
+        setAllTickers(response.data.data || []);
+        setFilterTickers(response.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch tickers", error);
+        setAllTickers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTickers();
   }, []);
 
-  // 3. 模擬跳動 (使用更新後的 stockData)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPrices((prev) => {
-        const next = { ...prev };
-        stockData.forEach((stock) => {
-          const move = (Math.random() - 0.5) * (stock.base * 0.002);
-          const newPrice = Math.max(0.01, prev[stock.symbol].price + move);
-          next[stock.symbol] = {
+    const intervalId = setInterval(() => {
+      setWatchlist((watchlist) =>
+        watchlist.map((item) => {
+          const randomChange = (Math.random() - 0.5) * 2;
+          const newPrice = Math.max(0.01, item.price + randomChange);
+          const change = newPrice - item.price;
+          const pct = (change / item.price) * 100;
+          return {
+            ...item,
             price: newPrice,
-            change: newPrice - stock.base,
-            pct: ((newPrice - stock.base) / stock.base) * 100,
+            change: pct,
           };
-        });
-        return next;
-      });
+        })
+      );
     }, 1500);
-    return () => clearInterval(interval);
-  }, [stockData]);
 
-  // --- 操作功能 ---
-  const addToWatchlist = (symbol) => {
-    if (!watchlist.includes(symbol)) setWatchlist([...watchlist, symbol]);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const getLogoUrl = (ticker) => {
+    const domain = domainMp[ticker];
+    return domain ? `https://logo.clearbit.com/${domain}?size=60` : "";
   };
-  const removeFromWatchlist = (symbol) => {
-    setWatchlist(watchlist.filter((s) => s !== symbol));
-  };
-  const availableToAdd = stockData.filter((s) => !watchlist.includes(s.symbol));
-  const getLogoUrl = (domain) => `https://logo.clearbit.com/${domain}?size=60`;
 
   return (
-    <>
-      <button className="watchlist-toggle-btn" onClick={() => setIsOpen(true)}>
-        <Star size={20} />
+    <div>
+      <button
+        className="watchlist-toggle-btn"
+        onClick={() => setIsOpen(true)}
+        aria-label="Open Watchlist" // Vital for screen readers
+      >
+        <Activity size={20} color="#4ade80" />
       </button>
 
-      <div className={`watchlist-drawer-container ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(false)}>
+      <div
+        className={`watchlist-drawer-container ${isOpen ? "open" : ""}`}
+        onClick={() => setIsOpen(false)}
+      >
         <div className="watchlist-drawer" onClick={(e) => e.stopPropagation()}>
           <div className="watchlist-header">
             <div className="watchlist-title-group">
@@ -117,71 +143,105 @@ export default function Watchlist() {
               <X size={20} />
             </button>
           </div>
-
-          <div className="watchlist-content">
-            {watchlist.length === 0 ? (
-              <div className="watchlist-empty">No stocks watching</div>
+          <div style={{ height: "470px" }}>
+            {loading ? (
+              <div className="loading-container">
+                <Loader2
+                  size={40}
+                  color="#636e72"
+                  className="loading-spinner"
+                />
+              </div>
             ) : (
-              watchlist.map((symbol) => {
-                const s = stockData.find((d) => d.symbol === symbol);
-                const p = prices[symbol];
-                if (!s || !p) return null;
+              <>
+                {watchlist.length === 0 ? (
+                  <EmptyContent
+                    icon={<CircleQuestionMark size={40} color="#636e72" />}
+                    message={"No stocks watching"}
+                    subMessage={"Please add some stocks to your watchlist."}
+                  />
+                ) : (
+                  <div className="watchlist-content">
+                    {watchlist.map((item) => {
+                      return (
+                        <div key={item.symbol} className="watchlist-item">
+                          <div className="item-left">
+                            <img
+                              src={getLogoUrl(item.ticker)}
+                              alt={item.ticker}
+                              className="item-logo"
+                            />
+                            <div>
+                              <div className="item-symbol">{item.ticker}</div>
+                              <div className="item-name">
+                                {/* company name here */}
+                              </div>
+                            </div>
+                          </div>
 
-                return (
-                  <div key={symbol} className="watchlist-item">
-                    <div className="item-left">
-                      <img src={getLogoUrl(s.domain)} alt={s.symbol} className="item-logo" />
-                      <div>
-                        <div className="item-symbol">{symbol}</div>
-                        <div className="item-name">{s.name}</div>
-                      </div>
-                    </div>
-                    <div className="item-right">
-                      
-                      {/* --- 修改重點：價格顯示區塊 --- */}
-                      <div className="price-group">
-                        
-                        {/* 1. 新增：昨收價 (灰白字) */}
-                        <span className="price-prev">
-                          Prev: {s.base.toFixed(2)}
-                        </span>
+                          <div className="item-right">
+                            <div className="price-group">
+                              <span
+                                className={`price-val ${
+                                  item.change >= 0 ? "text-up" : "text-down"
+                                }`}
+                              >
+                                {item.price.toFixed(2)}
+                              </span>
 
-                        {/* 2. 原有：最新價 */}
-                        <span className={`price-val ${p.change >= 0 ? "text-up" : "text-down"}`}>
-                          {p.price.toFixed(2)}
-                        </span>
+                              <span
+                                className={`price-pct ${
+                                  item.change >= 0 ? "bg-up" : "bg-down"
+                                }`}
+                              >
+                                {item.change > 0 ? "+" : ""}
+                                {item.change.toFixed(2)}%
+                              </span>
+                            </div>
 
-                        {/* 3. 原有：漲跌幅 */}
-                        <span className={`price-pct ${p.change >= 0 ? "bg-up" : "bg-down"}`}>
-                          {p.pct > 0 ? "+" : ""}{p.pct.toFixed(2)}%
-                        </span>
-
-                      </div>
-                      
-                      <button onClick={() => removeFromWatchlist(symbol)} className="delete-btn">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                            <button
+                              className="delete-btn"
+                              onClick={() => removeWatchListItem(item.ticker)}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })
+                )}
+              </>
             )}
           </div>
 
           <div className="watchlist-add-section">
-            <p className="add-label">Add Symbols</p>
+            <header>
+              <p className="add-label">Add Symbols</p>
+              <div className="add-watch-list-search-box">
+                <Search size={16} />
+                <input
+                  style={{ color: "black", paddingLeft: "6px" }}
+                  type="text"
+                  onChange={(e) => filterTickersFunc(e.target.value)}
+                />
+              </div>
+            </header>
             <div className="add-grid">
-              {availableToAdd.map((s) => (
-                <div key={s.symbol} className="add-item" onClick={() => addToWatchlist(s.symbol)}>
-                  <span className="add-symbol">{s.symbol}</span>
+              {filterTickers.map((ticker) => (
+                <div
+                  className="add-item"
+                  key={ticker.ticker}
+                  onClick={() => addWatchListItem(ticker)}
+                >
+                  <span className="add-symbol">{ticker}</span>
                   <Plus size={14} className="add-icon" />
                 </div>
               ))}
-              {availableToAdd.length === 0 && <span className="text-gray-500 text-xs">All added</span>}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
