@@ -544,11 +544,16 @@ def get_portfolio_metrics(portfolio_id, stimulated_data = None):
     # 假設一年有 252 個交易日
     mean_daily_return = np.mean(daily_returns)
     std_daily_return = np.std(daily_returns)
-    min_balance = np.min(portfolio_values)
     
     annual_return = mean_daily_return * 252
     annual_volatility = std_daily_return * np.sqrt(252)
     
+    cur_max = portfolio_values[0]
+    max_drawdown = 0
+    for i in range(len(portfolio_values)):
+        max_drawdown = max(max_drawdown, (cur_max - portfolio_values[i]) / cur_max)
+        cur_max = max(cur_max, portfolio_values[i])
+
     # 計算夏普比率 (Sharpe Ratio)
     # 假設無風險利率 (Risk Free Rate) 為 2% (0.02)
     risk_free_rate = 0.02
@@ -563,7 +568,7 @@ def get_portfolio_metrics(portfolio_id, stimulated_data = None):
         "annual_return": round(annual_return, 4),       # 例如 0.1523 (15.23%)
         "annual_volatility": round(annual_volatility, 4), # 例如 0.2015 (20.15%)
         "sharpe_ratio": round(sharpe_ratio, 4),          # 例如 0.65
-        "max_drawdown": round((np.max(portfolio_values) - min_balance) / np.max(portfolio_values), 4) # 最大回撤
+        "max_drawdown": round(max_drawdown, 4) # 最大回撤
     }
 
 def generate_portfolio_recommendation(portfolio_id):

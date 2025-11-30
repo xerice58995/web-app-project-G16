@@ -20,7 +20,7 @@ export default function NavBar() {
         <li className="home-nav-link">
           <Link to="/home/stimulation">
             <TrendingUpDown />
-            Stimulation
+            Simulation
           </Link>
         </li>
         <li className="home-nav-link">

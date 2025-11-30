@@ -8,7 +8,7 @@ export default function StockMarketCap({ data }) {
     <ul className="market-cap">
       <MarketCapNow marketCap={marketCap} percentChange={percentChange} />
       <MarketCapHistory marketCapData={marketRecentCapData} />
-      <li className="third-block">Market Cap Item 3</li>
+      <MarketCapHistory marketCapData={marketRecentCapData} />
     </ul>
   );
 }
