@@ -39,10 +39,6 @@ export default function Login({ onClose, initialMode = "login" }) {
           userName,
         });
 
-        localStorage.setItem("loginStatus", "true");
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("userName", userName);
-
         notify(response.message, "success");
         onClose();
         setFormData({ username: "", password: "" });
@@ -62,13 +58,11 @@ export default function Login({ onClose, initialMode = "login" }) {
   return (
     <div className="login-wrapper">
       <div className={`glass-card ${isSignup ? "expanded" : ""}`}>
-        
         <button onClick={onClose} className="close-btn" aria-label="Close">
           <X size={20} />
         </button>
 
         <div className="card-content">
-          
           <div className="form-section">
             <ul className="tabs">
               <li
@@ -142,7 +136,6 @@ export default function Login({ onClose, initialMode = "login" }) {
               <li>• Priority Access to New Features</li>
             </ul>
           </div>
-
         </div>
       </div>
     </div>

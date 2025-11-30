@@ -1,4 +1,4 @@
-import { useState, createContext } from "react";
+import { useState, createContext, useCallback, useEffect } from "react";
 
 export const StoreContext = createContext(null);
 
@@ -12,6 +12,12 @@ export const StoreProvider = ({ children }) => {
   const [refreshTrigger, setRefreshTrigger] = useState(() => ({
     portfolioRefreshTrigger: 0,
   }));
+
+  useEffect(() => {
+    localStorage.setItem("loginStatus", userInfo.loginStatus);
+    localStorage.setItem("userId", userInfo.userId || "");
+    localStorage.setItem("userName", userInfo.userName || "");
+  }, [userInfo]);
 
   const triggerPortfolioRefresh = useCallback(() => {
     setRefreshTrigger((prev) => ({

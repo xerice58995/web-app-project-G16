@@ -1,4 +1,5 @@
 import "./index.css";
+import { X } from "lucide-react";
 
 export default function Modal({ onClose, children }) {
   return (
@@ -6,7 +7,7 @@ export default function Modal({ onClose, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Close button inside the modal */}
         <button className="modal-close" onClick={onClose}>
-          X
+          <X size={20} color="green" />
         </button>
         {children}
       </div>
