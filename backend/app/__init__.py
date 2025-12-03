@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
+from flasgger import Swagger
 from config import Config
+
+swagger = Swagger()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -8,6 +11,8 @@ def create_app(config_class=Config):
 
     # 啟用 CORS (允許跨網域請求，這樣您的前端才能呼叫 API)
     CORS(app)
+
+    swagger.init_app(app)
 
     # 註冊資料庫
     from . import db

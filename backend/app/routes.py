@@ -13,8 +13,51 @@ api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
 @api_v1.route('/users/signup', methods=['POST'])
 def user_signup():
     """
-    API: userSignUp
-    使用 username 和 password 註冊
+    使用者註冊
+    ---
+    tags:
+      - User Management
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              example: "test_user"
+              description: 使用者名稱 (或 Email)
+            password:
+              type: string
+              example: "password123"
+              description: 密碼
+    responses:
+      201:
+        description: 註冊成功
+        schema:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 1
+            message:
+              type: string
+              example: "account successfully created"
+            data:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                userName:
+                  type: string
+      400:
+        description: 缺少參數
+      409:
+        description: 使用者名稱已存在
     """
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
@@ -59,8 +102,46 @@ def user_signup():
 @api_v1.route('/users/login', methods=['POST'])
 def user_login():
     """
-    API: userSignIn
-    使用 username 和 password 登入
+    使用者登入
+    ---
+    tags:
+      - User Management
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              example: "test_user"
+            password:
+              type: string
+              example: "password123"
+    responses:
+      200:
+        description: 登入成功
+        schema:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 1
+            message:
+              type: string
+            data:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                userName:
+                  type: string
+      401:
+        description: 登入失敗 (密碼錯誤或無此帳號)
     """
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
@@ -107,8 +188,24 @@ def user_login():
 @api_v1.route('/assets', methods=['GET'])
 def getAssets():
     """
-    API: getAssets
-    取得所有資產資料
+    取得所有資產列表
+    ---
+    tags:
+      - Asset Information
+    responses:
+      200:
+        description: 成功取得資產列表
+        schema:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 1
+            data:
+              type: array
+              items:
+                type: string
+                example: "AAPL"
     """
     try:
         assets_data = services.get_all_stock_tickers()
@@ -127,8 +224,34 @@ def getAssets():
 @api_v1.route('/assets/price/<string:ticker_symbol>', methods=['GET'])
 def getAssetHistoricalPrices(ticker_symbol):
     """
-    API: getAssetHistoricalPrices
-    取得特定資產的歷史價格資料(過去一年)
+    取得特定資產歷史股價
+    ---
+    tags:
+      - Asset Information
+    parameters:
+      - name: ticker_symbol
+        in: path
+        type: string
+        required: true
+        description: 股票代號 (例如 AAPL)
+        example: "AAPL"
+    responses:
+      200:
+        description: 成功取得歷史股價
+        schema:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                assetName:
+                  type: string
+                historicalPrice:
+                  type: object
+                  description: 日期與價格的對應
+                  example: {"2023-01-01": 150.0, "2023-01-02": 152.5}
+      404:
+        description: 找不到該資產
     """
     try:
         history = services.get_security_history(ticker_symbol)
@@ -156,8 +279,19 @@ def getAssetHistoricalPrices(ticker_symbol):
 @api_v1.route('/portfolio/<int:user_id>', methods=['GET'])
 def getUserPortfolio(user_id):
     """
-    API: getUserPortfolio
-    取得特定使用者的投資組合資料
+    取得使用者的所有投資組合
+    ---
+    tags:
+      - Portfolio Management
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+        description: 使用者 ID
+    responses:
+      200:
+        description: 成功取得組合列表
     """
     try:
         portfolio_data = services.get_user_portfolios_data(user_id)
@@ -189,8 +323,39 @@ def getUserPortfolio(user_id):
 @api_v1.route('/portfolio/<int:portfolio_id>', methods=['POST'])
 def updatePortfolio(portfolio_id):
     """
-    API: updatePortfolio
-    更新特定投資組合的資料 (新增/修改投資標的)
+    更新投資組合內容 (全量更新)
+    ---
+    tags:
+      - Portfolio Management
+    parameters:
+      - name: portfolio_id
+        in: path
+        type: integer
+        required: true
+      - name: body
+        in: body
+        required: true
+        description: "支援 Map 格式或 List 格式"
+        schema:
+          type: object
+          properties:
+            portfolioId:
+              type: object
+              description: "Map 格式 { Ticker: Quantity }"
+              example: { "TSMC": 10, "AAPL": 90 }
+            assets:
+              type: array
+              description: "List 格式"
+              items:
+                type: object
+                properties:
+                  ticker:
+                    type: string
+                  quantity:
+                    type: number
+    responses:
+      200:
+        description: "更新成功"
     """
     data = request.get_json()
     if not data:
@@ -251,9 +416,41 @@ def updatePortfolio(portfolio_id):
 @api_v1.route('/portfolio/create', methods=['POST'])
 def createPortfolio():
     """
-    API: createPortfolio
     建立新的投資組合
-    Request Body: { "userId": 1, "name": "My New Portfolio", "assets": ... }
+    ---
+    tags:
+      - Portfolio Management
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - userId
+            - name
+          properties:
+            userId:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "My Tech Portfolio"
+            assets:
+              type: array
+              items:
+                type: object
+                properties:
+                  ticker:
+                    type: string
+                    example: "AAPL"
+                  quantity:
+                    type: number
+                    example: 10
+              description: (選填) 初始資產列表
+    responses:
+      201:
+        description: 建立成功
     """
     data = request.get_json()
     if not data or 'userId' not in data or 'name' not in data:
@@ -304,8 +501,18 @@ def createPortfolio():
 @api_v1.route('/portfolio/<int:portfolio_id>', methods=['DELETE'])
 def deletePortfolio(portfolio_id):
     """
-    API: deletePortfolio
-    刪除特定投資組合
+    刪除投資組合
+    ---
+    tags:
+      - Portfolio Management
+    parameters:
+      - name: portfolio_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: 刪除成功
     """
     try:
         # 呼叫 Service 執行刪除
@@ -337,8 +544,18 @@ def deletePortfolio(portfolio_id):
 @api_v1.route('/portfolio/performance/<int:portfolio_id>', methods=['GET'])
 def getPortfolioPerformance(portfolio_id):
     """
-    API: getPortfolioPerformance
-    取得特定投資組合的績效資料
+    取得歷史績效回測
+    ---
+    tags:
+      - Analysis & Simulation
+    parameters:
+      - name: portfolio_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: 成功取得績效數據
     """
     try:
         # 呼叫 Service
@@ -364,8 +581,18 @@ def getPortfolioPerformance(portfolio_id):
 @api_v1.route('/portfolio/simulation/<int:portfolio_id>', methods=['GET'])
 def simulatePortfolio(portfolio_id):
     """
-    API: simulatePortfolio
-    模擬特定投資組合的資產配置
+    執行蒙地卡羅模擬 (未來預測)
+    ---
+    tags:
+      - Analysis & Simulation
+    parameters:
+      - name: portfolio_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: 成功回傳模擬數據 (百分位數)
     """
     try:
         # 呼叫 Service 執行模擬
@@ -405,8 +632,18 @@ def simulatePortfolio(portfolio_id):
 @api_v1.route('/portfolio/recommendation/<int:portfolio_id>', methods=['GET'])
 def recommendPortfolio(portfolio_id):
     """
-    API: recommendPortfolio
-    為特定投資組合提供資產配置建議
+    取得智能投資建議
+    ---
+    tags:
+      - Analysis & Simulation
+    parameters:
+      - name: portfolio_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: 成功回傳建議
     """
     try:
         # 呼叫 Service
@@ -434,8 +671,18 @@ def recommendPortfolio(portfolio_id):
 @api_v1.route('/watchlists/<int:user_id>', methods=['GET'])
 def getUserWatchlist(user_id):
     """
-    API: getUserWatchlist
-    取得使用者的關注清單
+    取得關注清單
+    ---
+    tags:
+      - Watchlist
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+    responses:
+      200:
+        description: 成功取得清單
     """
     try:
         watchlist_data = services.get_user_watchlist(user_id)
@@ -460,9 +707,29 @@ def getUserWatchlist(user_id):
 @api_v1.route('/watchlists/<int:user_id>', methods=['POST'])
 def addStockWatchListItem(user_id):
     """
-    API: addStockWatchListItem
     新增關注股票
-    Request Body: { "ticker": "2330.TW" }
+    ---
+    tags:
+      - Watchlist
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - ticker
+          properties:
+            ticker:
+              type: string
+              example: "2330.TW"
+    responses:
+      200:
+        description: 新增成功
     """
     data = request.get_json()
     if not data or 'ticker' not in data:
@@ -490,8 +757,22 @@ def addStockWatchListItem(user_id):
 @api_v1.route('/watchlists/<int:user_id>/<string:ticker>', methods=['DELETE'])
 def deleteWatchListItem(user_id, ticker):
     """
-    API: deleteWatchListItem
     移除關注股票
+    ---
+    tags:
+      - Watchlist
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+      - name: ticker
+        in: path
+        type: string
+        required: true
+    responses:
+      200:
+        description: 移除成功
     """
     try:
         success = services.remove_watchlist_item(user_id, ticker)
